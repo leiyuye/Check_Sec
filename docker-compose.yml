@@ -43,6 +43,8 @@ services:
       TZ: Asia/Shanghai
     volumes:
       - upload_data:/app/uploads
+    ports:
+      - "9090:8080"   # 👈 加这一行！宿主机9090 → 容器8080
     networks:
       - check_sec_net
 
