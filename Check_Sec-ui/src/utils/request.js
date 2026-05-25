@@ -7,6 +7,21 @@ const request = axios.create({
   timeout: 60000
 })
 
+function isLoginOrRegisterRequest(url = '') {
+  return url.includes('/auth/login') || url.includes('/auth/register')
+}
+
+function resolveErrorMessage(error) {
+  const data = error.response?.data
+  if (data && typeof data === 'object' && data.message) {
+    return data.message
+  }
+  if (typeof data === 'string' && data) {
+    return data
+  }
+  return error.message || '网络错误'
+}
+
 request.interceptors.request.use((config) => {
   const token = localStorage.getItem('token')
   if (token) {
@@ -28,13 +43,22 @@ request.interceptors.response.use(
     return res.data
   },
   (error) => {
+    const url = error.config?.url || ''
+    const msg = resolveErrorMessage(error)
+
     if (error.response?.status === 401) {
-      localStorage.removeItem('token')
-      localStorage.removeItem('user')
-      router.push('/login')
-      ElMessage.error('登录已过期，请重新登录')
+      if (isLoginOrRegisterRequest(url)) {
+        ElMessage.error(msg || '账号或密码错误')
+      } else {
+        localStorage.removeItem('token')
+        localStorage.removeItem('user')
+        if (router.currentRoute.value.path !== '/login') {
+          router.push('/login')
+        }
+        ElMessage.error(msg || '登录已过期，请重新登录')
+      }
     } else {
-      ElMessage.error(error.response?.data?.message || error.message || '网络错误')
+      ElMessage.error(msg)
     }
     return Promise.reject(error)
   }

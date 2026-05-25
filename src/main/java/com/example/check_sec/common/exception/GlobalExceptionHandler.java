@@ -17,9 +17,11 @@ import java.util.stream.Collectors;
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(BusinessException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ApiResponse<Void> handleBusiness(BusinessException e) {
-        return ApiResponse.fail(e.getCode(), e.getMessage());
+    public org.springframework.http.ResponseEntity<ApiResponse<Void>> handleBusiness(BusinessException e) {
+        HttpStatus status = e.getCode() == 401 ? HttpStatus.UNAUTHORIZED
+                : (e.getCode() == 403 ? HttpStatus.FORBIDDEN : HttpStatus.BAD_REQUEST);
+        return org.springframework.http.ResponseEntity.status(status)
+                .body(ApiResponse.fail(e.getCode(), e.getMessage()));
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
@@ -31,10 +33,16 @@ public class GlobalExceptionHandler {
         return ApiResponse.fail(400, msg);
     }
 
-    @ExceptionHandler({BadCredentialsException.class, DisabledException.class})
+    @ExceptionHandler(BadCredentialsException.class)
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
-    public ApiResponse<Void> handleAuth(RuntimeException e) {
-        return ApiResponse.fail(401, e.getMessage());
+    public ApiResponse<Void> handleBadCredentials(BadCredentialsException e) {
+        return ApiResponse.fail(401, "账号或密码错误");
+    }
+
+    @ExceptionHandler(DisabledException.class)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    public ApiResponse<Void> handleDisabled(DisabledException e) {
+        return ApiResponse.fail(401, "账号已禁用，请联系管理员");
     }
 
     @ExceptionHandler(AccessDeniedException.class)

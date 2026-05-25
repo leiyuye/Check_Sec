@@ -31,7 +31,17 @@ public class DataInitializer implements CommandLineRunner {
             admin.setAddress("系统");
             admin.setRole(RoleType.ADMIN);
             admin.setStatus(UserStatus.ENABLED);
+            admin.setMustChangePassword(true);
             userRepository.save(admin);
         }
+        // 兼容旧库：仍为默认密码的管理员标记需改密
+        userRepository.findByPhone("admin").ifPresent(admin -> {
+            if (passwordEncoder.matches("admin123456", admin.getPassword())) {
+                admin.setMustChangePassword(true);
+            } else {
+                admin.setMustChangePassword(false);
+            }
+            userRepository.save(admin);
+        });
     }
 }

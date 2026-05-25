@@ -114,6 +114,7 @@ public class UserService {
             newPassword = "123456";
         }
         user.setPassword(passwordEncoder.encode(newPassword));
+        user.setMustChangePassword(true);
         userRepository.save(user);
     }
 

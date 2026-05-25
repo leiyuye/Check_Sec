@@ -31,4 +31,16 @@ public class AuthController {
     public ApiResponse<UserInfoResponse> me() {
         return ApiResponse.ok(authService.me());
     }
+
+    @PutMapping("/password")
+    public ApiResponse<Void> changePassword(@Valid @RequestBody ChangePasswordRequest request) {
+        authService.changePassword(request);
+        return ApiResponse.ok("密码修改成功", null);
+    }
+
+    @PostMapping("/change-password")
+    public ApiResponse<Void> changePasswordPost(@Valid @RequestBody ChangePasswordRequest request) {
+        authService.changePassword(request);
+        return ApiResponse.ok("密码修改成功", null);
+    }
 }

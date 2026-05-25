@@ -18,6 +18,7 @@ public class UserInfoResponse {
     private Long qualificationFileId;
     private RoleType role;
     private UserStatus status;
+    private Boolean mustChangePassword;
     private LocalDateTime createdAt;
 
     public static UserInfoResponse from(SysUser user) {
@@ -32,6 +33,7 @@ public class UserInfoResponse {
         r.qualificationFileId = user.getQualificationFileId();
         r.role = user.getRole();
         r.status = user.getStatus();
+        r.mustChangePassword = user.getMustChangePassword();
         r.createdAt = user.getCreatedAt();
         return r;
     }
@@ -56,6 +58,8 @@ public class UserInfoResponse {
     public void setRole(RoleType role) { this.role = role; }
     public UserStatus getStatus() { return status; }
     public void setStatus(UserStatus status) { this.status = status; }
+    public Boolean getMustChangePassword() { return mustChangePassword; }
+    public void setMustChangePassword(Boolean mustChangePassword) { this.mustChangePassword = mustChangePassword; }
     public LocalDateTime getCreatedAt() { return createdAt; }
     public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
 }

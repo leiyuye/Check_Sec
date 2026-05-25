@@ -10,6 +10,7 @@ import com.example.check_sec.security.JwtTokenProvider;
 import com.example.check_sec.security.LoginUser;
 import com.example.check_sec.security.SecurityUtils;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -67,11 +68,30 @@ public class AuthService {
             throw new BusinessException("账号已禁用，请联系管理员");
         }
         String token = jwtTokenProvider.generateToken(user.getId(), user.getPhone(), user.getRole().name());
-        boolean suggestChange = user.getRole() == RoleType.ADMIN && "admin".equals(user.getPhone());
+        boolean suggestChange = Boolean.TRUE.equals(user.getMustChangePassword());
         return new AuthResponse(token, UserInfoResponse.from(user), suggestChange);
     }
 
     public UserInfoResponse me() {
         return UserInfoResponse.from(SecurityUtils.currentUser().getUser());
+    }
+
+    @Transactional
+    public void changePassword(ChangePasswordRequest request) {
+        LoginUser loginUser = SecurityUtils.currentUser();
+        SysUser user = userRepository.findById(loginUser.getUserId())
+                .orElseThrow(() -> new BusinessException("用户不存在"));
+        try {
+            authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(user.getPhone(), request.getOldPassword()));
+        } catch (BadCredentialsException e) {
+            throw new BusinessException("原密码不正确");
+        }
+        if (passwordEncoder.matches(request.getNewPassword(), user.getPassword())) {
+            throw new BusinessException("新密码不能与原密码相同");
+        }
+        user.setPassword(passwordEncoder.encode(request.getNewPassword()));
+        user.setMustChangePassword(false);
+        userRepository.save(user);
     }
 }

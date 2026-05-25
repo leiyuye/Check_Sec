@@ -11,3 +11,7 @@ export function register(data) {
 export function getMe() {
   return request.get('/auth/me')
 }
+
+export function changePassword(data) {
+  return request.post('/auth/change-password', data)
+}

@@ -41,7 +41,7 @@ async function handleLogin() {
   try {
     const data = await userStore.login(form)
     if (data.suggestChangePassword) {
-      await ElMessageBox.alert('首次登录建议修改默认密码', '安全提示', { type: 'warning' })
+      await ElMessageBox.alert('首次登录请尽快修改默认密码。登录后点击左侧「系统信息」（或「个人信息」），在页面下方「修改密码」处操作。', '安全提示', { type: 'warning' })
     }
     ElMessage.success('登录成功')
     router.push('/dashboard')

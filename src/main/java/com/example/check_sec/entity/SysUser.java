@@ -47,6 +47,10 @@ public class SysUser {
     @Column(nullable = false, length = 20)
     private UserStatus status = UserStatus.ENABLED;
 
+    /** 是否需提示修改初始密码（管理员默认账号或管理员重置密码后为 true） */
+    @Column(nullable = false)
+    private Boolean mustChangePassword = false;
+
     @Column(nullable = false)
     private LocalDateTime createdAt;
 
@@ -85,6 +89,8 @@ public class SysUser {
     public void setRole(RoleType role) { this.role = role; }
     public UserStatus getStatus() { return status; }
     public void setStatus(UserStatus status) { this.status = status; }
+    public Boolean getMustChangePassword() { return mustChangePassword; }
+    public void setMustChangePassword(Boolean mustChangePassword) { this.mustChangePassword = mustChangePassword; }
     public LocalDateTime getCreatedAt() { return createdAt; }
     public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
     public LocalDateTime getUpdatedAt() { return updatedAt; }
