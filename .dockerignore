@@ -1,0 +1,11 @@
+target/
+.idea/
+*.iml
+.git/
+.gitignore
+uploads/
+Check_Sec-ui/
+docs/
+*.md
+!README.md
+.mvn/wrapper/maven-wrapper.jar
